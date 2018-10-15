@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+    <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
     <title>data binding test</title>
     <link href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -13,133 +15,147 @@
         
     </style>
 </head>
+
 <body>
     <div id="table">
-            <table id="mytable" class="table table-bordered table-hover">
+        <table id="mytable" class="table table-bordered table-hover">
     </div>
-    
+
 
 
     </table>
 
 
- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
- <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script type="text/javascript">
- 
- function wlmTable(options){
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
 
-    console.log(options);
-     this._options= $.extend({},options);
-     
-     this._el = options.el;
-     this._header = options.header;
-     this._data = options.data;
-     this._dom = $("#"+this._el);
-     this._page = this._options.page;
-     this._pageSize = this._options.pageSize;
-     this._pageLimit = Math.ceil(this._data.length / this._pageSize);
-     this._pageStart ;
+        function wlmTable(options) {
 
-     
-
-     this.initHeader();
-
-    this.render(this._data);
-
-    this.initFooter();
-   
- }
-
- wlmTable.prototype.initHeader = function() {
-     
-     var th = $("<tr></tr>");
-     if(this._header == null || this._header ==undefined || this._header.length ==0)
-         throw "列表头没有设置";
-
-     $.each(this._header,function(index,ele){
-        th.append("<th>"+ele+"</th>");
-     });    
-     
-     this._dom.append(th);
-
-    
-    
-     
-
- }
-
- wlmTable.prototype.render = function(data) {
-    
-     var that = this;
-     var root = this._dom;
-     var header ;
-     if(data ==null || data == undefined || data.length ==0)
-        return;
-
-    var html = root.find("tbody");
-    
-    
-    
-    $.each(data,function(index,ele){
-        var tr = $("<tr></tr>");
-      
-
-
-        if(index<that._pageSize) {
-            for (var value in ele) {
-             tr.append("<td>"+ele[value]+"</td>");
-             }
-        }
             
+            this._options = $.extend({}, options);
+
+            this._el = options.el;
+            this._header = options.header;
+            this._data = options.data;
+            this._dom = $("#" + this._el);
+            this._page = this._options.page;
+            this._pageSize = this._options.pageSize;
+            this._pageLimit = Math.ceil(this._data.length / this._pageSize);
+            this._pageStart;
+            this._current = 1;
+
+
+            if (this===window) {
+                return new wlmTable(options);
+            }
+
+            this.initHeader();
+
+            this.render(this._data);
+
+            this.initFooter();
+
            
-             
 
-        
-       
-   
+        }
 
-         html.append(tr);
+        wlmTable.prototype.initHeader = function () {
 
-    
-   
-       
-    });    
+            var th = $("<tr></tr>");
+            if (this._header == null || this._header == undefined || this._header.length == 0)
+                throw "列表头没有设置";
 
- }
+            this.each(this._header, function (index, ele) {
+                th.append("<th>" + ele + "</th>");
+            });
 
- wlmTable.prototype.initFooter = function() {
+            this._dom.append(th);
 
 
-     var that = this;
 
-    if(this._page ==null|| this._page ==false)
-        return;
 
-    var page = $("<ul class='pagination'><li><a href='' aria-label='Previous'><span aria-hidden='true'>&laquo;</span></a></li><li><a href='#' aria-label='Next'><span aria-hidden='true'>&raquo;</span></a></li></ul>")
-    
-    for(var i =1; i<this._pageLimit; i++) {
-        page.find("li").last().before("<li><a page="+i+" href='#''>"+i+"</a></li>");
-    }    
-    
-    page.on("click","li",function(e){
+
+        }
+
+        wlmTable.prototype.render = function (data) {
+
+            var that = this;
+            var root = this._dom;
+            var header;
+            if (data == null || data == undefined || data.length == 0)
+                return;
+
+            var html = root.find("tbody");
+
+
+
+            this.each(data, function (index, ele) {
+                var tr = $("<tr></tr>");
+
+
+
+                if (index <= that._pageSize) {
+                    for (var value in ele) {
+                        tr.append("<td>" + ele[value] + "</td>");
+                    }
+                }
+
+
+
+
+
+
+
+
+                html.append(tr);
+
+
+
+
+            });
+
+        }
+
+        wlmTable.prototype.initFooter = function () {
+
+
+            var that = this;
+            var page;
+
+            if (this._page == null || this._page == false)
+                return;
+            if(that._current == 1){
+                 page = $("<ul class='pagination'><li><a href=''page="+that._current+" aria-label='上一页'><span aria-hidden='true'>&laquo;</span></a></li><li><a href='#' page="+(that._current+1)+" aria-label='下一页'><span aria-hidden='true'>&raquo;</span></a></li></ul>")
+
+            }else{
+                 page = $("<ul class='pagination'><li><a href=''page="+(that._current-1)+" aria-label='上一页'><span aria-hidden='true'>&laquo;</span></a></li><li><a href='#' page="+(that._current+1)+" aria-label='下一页'><span aria-hidden='true'>&raquo;</span></a></li></ul>")
+
+            }
+
+            for (var i = 1; i < this._pageLimit; i++) {
+                page.find("li").last().before("<li><a page=" + i + " href='#''>" + i + "</a></li>");
+            }
+
+            page.on("click", "li", function (e) {
                 e.stopPropagation();
-                
-                var page = $(this).find("a").attr("page");
-               
-                that._pageStart = page*that._pageSize;
-                if(page == 1)
-                that._pageStart =-1;
 
-                console.log(that._pageStart);
-                console.log(that._pageStart+that._pageSize);
-                var data = [] ;
-                for(var j =0; j<that._data.length;j++) {
-                    if(j>that._pageStart && j<that._pageStart+that._pageSize)
+                var page = $(this).find("a").attr("page");
+
+                that._current = Number(page);
+
+                that._pageStart = page * that._pageSize;
+                if (page == 1)
+                    that._pageStart = -1;
+
+               
+                var data = [];
+                for (var j = 0; j <= that._data.length; j++) {
+                    if (j > that._pageStart && j < that._pageStart + that._pageSize)
                         data.push(that._data[j]);
                 }
-                console.log(data);
-             
+               
+
                 that._dom.empty();
 
                 that.initHeader();
@@ -147,35 +163,55 @@
                 that.render(data);
                 that.initFooter();
             });
+
+
+
+            this._dom.append(page);
+
+        }
+
+
+        wlmTable.prototype.each = function(obj,fun) {
+            if(typeof obj != "object")
+                throw "元素必须是数组或对象"
+
+            for(var i = 0; i< obj.length; i++) {
+                fun(i,obj[i]);
+            }
+           
+
+        }
+
+        
+        $(function () {
+            var data = [
+
+            ];
+
+            for (var i = 0; i <= 100; i++) {
+                data.push({ id: i, name: "" + i, action: "查看" });
+            }
+
+        //    each(data,function(index,ele){
+        //         console.log(ele);
+        //     });
+
+            var table =  wlmTable({
+                el: "mytable",
+                header: ["id", "姓名", "操作"],
+                data: data,
+                page: true,
+                pageSize: 10
+            });
+
             
 
 
-    this._dom.append(page);
-
- }
-
- $(function() {
-     var data = [
-        
-     ];
-
-     for(var i =0;i<45;i++) {
-         data.push( {id:i,name:""+i,action:"查看"});
-     }
-    
-    new wlmTable({
-        el: "mytable",
-        header: ["id","姓名","操作"],
-        data:data,
-        page: true,
-        pageSize: 10
-    });
+        })
 
 
- })
- 
- 
-</script>
- 
+    </script>
+
 </body>
+
 </html>
